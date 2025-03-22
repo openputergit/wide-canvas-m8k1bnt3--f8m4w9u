@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+        }
+        .bot-message {
+            background-color: #f5f5f5;
+        }
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg">
+            <div class="p-4 bg-blue-600 text-white rounded-t-lg">
+                <h1 class="text-2xl font-bold">Healthcare Assistant</h1>
+                <p class="text-sm">Your 24/7 medical companion</p>
+            </div>
+
+            <div class="chat-container p-4" id="chatContainer">
+                <div class="bot-message p-3 rounded-lg mb-4">
+                    Hello! I'm your healthcare assistant. I can help you with:
+                    <ul class="list-disc ml-5 mt-2">
+                        <li>Medical consultations</li>
+                        <li>Report analysis</li>
+                        <li>Booking blood tests</li>
+                        <li>General health guidance</li>
+                        <li>Emotional support</li>
+                    </ul>
+                    How can I assist you today?
+                </div>
+            </div>
+
+            <div class="p-4 border-t">
+                <div class="flex gap-2">
+                    <input type="text" id="userInput" 
+                           class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                           placeholder="Type your message here...">
+                    <button onclick="sendMessage()" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const responses = {
+            appointment: "I'll help you book a blood test appointment. What date and time would you prefer?",
+            reports: "I can help analyze your reports. Please describe your reports or concerns.",
+            support: "I'm here to support you. Would you like to talk about what's troubling you?",
+            consultation: "I can provide a general consultation. What symptoms are you experiencing?",
+            default: "I'm here to help. Could you please be more specific about what you need?"
+        };
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Process message and respond
+            setTimeout(() => {
+                removeTypingIndicator();
+                processMessage(message);
+            }, 1000);
+        }
+
+        function addMessage(message, sender) {
+            const container = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message p-3 rounded-lg mb-4`;
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const container = document.getElementById('chatContainer');
+            const indicator = document.createElement('div');
+            indicator.className = 'bot-message p-3 rounded-lg mb-4 typing-indicator';
+            indicator.id = 'typingIndicator';
+            indicator.textContent = 'Typing';
+            container.appendChild(indicator);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function processMessage(message) {
+            message = message.toLowerCase();
+            let response;
+
+            if (message.includes('appointment') || message.includes('blood test') || message.includes('book')) {
+                response = responses.appointment;
+                // Simulating SMS confirmation
+                setTimeout(() => {
+                    addMessage("SMS Confirmation: Your appointment has been registered. We'll send you the details shortly.", 'bot');
+                }, 2000);
+            }
+            else if (message.includes('report') || message.includes('analysis')) {
+                response = responses.reports;
+            }
+            else if (message.includes('sad') || message.includes('stress') || message.includes('anxiety')) {
+                response = responses.support;
+            }
+            else if (message.includes('consult') || message.includes('sick') || message.includes('pain')) {
+                response = responses.consultation;
+            }
+            else {
+                response = responses.default;
+            }
+
+            addMessage(response, 'bot');
+        }
+
+        // Enter key functionality
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
